@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">MPos Soundboard</string>
+    <string name="posboss">I\'m the PosBoss</string>
+    <string name="tap">(Tap Tap)</string>
+    <string name="indead">Indead</string>
+    <string name="canyou">I don\'t know, CAN you?</string>
+    <string name="youare">You are who you eat</string>
+    <string name="oklahoma">Oklahoma. OK</string>
+    <string name="hitting">Stop hitting on me</string>
+    <string name="quote">Random Quote</string>
+</resources>
