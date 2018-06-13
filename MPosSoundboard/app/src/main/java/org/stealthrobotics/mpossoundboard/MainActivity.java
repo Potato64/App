@@ -1,18 +1,24 @@
 package org.stealthrobotics.mpossoundboard;
 
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.media.MediaPlayer;
 import android.opengl.Visibility;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
+
+    private float currentAcceleration = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +59,24 @@ public class MainActivity extends AppCompatActivity {
                 ((ImageView) findViewById(R.id.imageView)).setVisibility(View.GONE);
             }
         }, 5000);
+        class MoveImage extends Thread {
+            @Override
+            public void run() {
+                super.run();
+                ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                int startX = imageView.getRight();
+                long startTime = System.currentTimeMillis();
+                float currentSpeed = 0;
+                while (System.currentTimeMillis() - 5000 < startTime)  {
+                    Log.e("data", currentAcceleration + " " + currentSpeed);
+                    currentSpeed += currentAcceleration;
+                    imageView.setLeft(startX - (int) currentSpeed * 5);
+                }
+                imageView.setRight(startX);
+            }
+        }
+        MoveImage mover = new MoveImage();
+        mover.start();
 
     }
 
@@ -98,5 +122,18 @@ public class MainActivity extends AppCompatActivity {
                 player = MediaPlayer.create(MainActivity.this, R.raw.quote_clip9);
         }
         player.start();
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor arg0, int arg1)    {
+
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event)  {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            currentAcceleration += event.values[0];
+            Log.e("acceleration", "" + event.values[0]);
+        }
     }
 }
