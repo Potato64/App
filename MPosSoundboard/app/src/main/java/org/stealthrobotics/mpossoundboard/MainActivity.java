@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.opengl.Visibility;
 import android.os.Handler;
@@ -19,11 +20,19 @@ import android.widget.TableLayout;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     private float currentAcceleration = 0;
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+
+    final int tapDuration = 15000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public void playIndead(View view)  {
@@ -58,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 ((TableLayout) findViewById(R.id.buttons)).setVisibility(View.VISIBLE);
                 ((ImageView) findViewById(R.id.imageView)).setVisibility(View.GONE);
             }
-        }, 5000);
+        }, tapDuration);
         class MoveImage extends Thread {
             @Override
             public void run() {
@@ -67,10 +76,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 int startX = imageView.getRight();
                 long startTime = System.currentTimeMillis();
                 float currentSpeed = 0;
-                while (System.currentTimeMillis() - 5000 < startTime)  {
+                while (System.currentTimeMillis() - tapDuration < startTime)  {
                     Log.e("data", currentAcceleration + " " + currentSpeed);
                     currentSpeed += currentAcceleration;
-                    imageView.setLeft(startX - (int) currentSpeed * 5);
+                    imageView.setRight(startX - (int) (currentSpeed / 10));
                 }
                 imageView.setRight(startX);
             }
@@ -125,6 +134,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     @Override
+    protected void onPause()    {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    protected void onResume()   {
+        super.onResume();
+        sensorManager.registerListener(this , accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
     public void onAccuracyChanged(Sensor arg0, int arg1)    {
 
     }
@@ -132,8 +153,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onSensorChanged(SensorEvent event)  {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            currentAcceleration += event.values[0];
-            Log.e("acceleration", "" + event.values[0]);
+            currentAcceleration = event.values[0];
         }
     }
 }
