@@ -73,15 +73,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void run() {
                 super.run();
                 ImageView imageView = (ImageView) findViewById(R.id.imageView);
-                int startX = imageView.getRight();
+                float startX = imageView.getX();
                 long startTime = System.currentTimeMillis();
                 float currentSpeed = 0;
                 while (System.currentTimeMillis() - tapDuration < startTime)  {
                     Log.e("data", currentAcceleration + " " + currentSpeed);
                     currentSpeed += currentAcceleration;
-                    imageView.setRight(startX - (int) (currentSpeed / 10));
+                    imageView.setX(startX - (int) (currentSpeed / 5));
                 }
-                imageView.setRight(startX);
+                imageView.setX(startX);
             }
         }
         MoveImage mover = new MoveImage();
