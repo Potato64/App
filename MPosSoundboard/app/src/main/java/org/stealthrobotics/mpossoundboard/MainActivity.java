@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager sensorManager;
     private Sensor accelerometer;
 
-    final int tapDuration = 15000;
+    final int tapDuration = 5000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,8 +84,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 imageView.setX(startX);
             }
         }
-        MoveImage mover = new MoveImage();
-        mover.start();
+        //MoveImage mover = new MoveImage();
+        //mover.start();
 
     }
 
